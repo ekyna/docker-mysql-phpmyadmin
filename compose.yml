@@ -1,0 +1,49 @@
+version: '2'
+
+networks:
+    default:
+        external:
+            name: "${COMPOSE_PROJECT_NAME}-network"
+
+volumes:
+    database:
+        external:
+            name: "${COMPOSE_PROJECT_NAME}-database"
+    sessions:
+        external:
+            name: "${COMPOSE_PROJECT_NAME}-sessions"
+
+services:
+    # https://hub.docker.com/_/mysql/
+    mysql:
+        container_name: global_mysql
+        image: mysql:5.6
+        env_file: ./.env
+        restart: always
+        volumes:
+            - database:/var/lib/mysql:rw
+        logging:
+            driver: "json-file"
+            options: { max-size: "2m", max-file: "3" }
+        networks:
+            default:
+                aliases:
+                    - mysql
+
+    # https://hub.docker.com/r/phpmyadmin/phpmyadmin/
+    phpmyadmin:
+        container_name: global_phpmyadmin
+        image: phpmyadmin/phpmyadmin:4.6
+        env_file: ./.env
+        restart: always
+        ports:
+            - 8888:80
+        volumes:
+            - sessions:/sessions
+        logging:
+            driver: "json-file"
+            options: { max-size: "2m", max-file: "3" }
+        networks:
+            default:
+                aliases:
+                    - phpmyadmin
