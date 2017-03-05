@@ -20,6 +20,8 @@ services:
         image: mysql:5.6
         env_file: ./.env
         restart: always
+        ports:
+            - 8889:3306
         volumes:
             - database:/var/lib/mysql:rw
         logging:
