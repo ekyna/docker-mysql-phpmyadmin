@@ -205,7 +205,7 @@ ServiceStart() {
     printf "Starting service \e[1;33m$1\e[0m ... "
 
     cd ${DIR} && \
-        docker-compose -f compose.yml start -d $1 >> ${LOG_PATH} 2>&1 \
+        docker-compose -f compose.yml start $1 >> ${LOG_PATH} 2>&1 \
             && printf "\e[32mdone\e[0m\n" \
             || (printf "\e[31merror\e[0m\n" && exit 1)
 }

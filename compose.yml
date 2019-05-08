@@ -16,14 +16,18 @@ volumes:
 services:
     # https://hub.docker.com/_/mysql/
     mysql:
-        container_name: global_mysql
+        container_name: "${COMPOSE_PROJECT_NAME}_mysql"
         image: mysql:5.6
-        env_file: ./.env
         restart: always
         ports:
-            - 8889:3306
+            - "8889:3306"
         volumes:
             - database:/var/lib/mysql:rw
+        environment:
+            MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+            MYSQL_USER: "${MYSQL_USER}"
+            MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+            MYSQL_DATABASE: "${MYSQL_DATABASE}"
         logging:
             driver: "json-file"
             options: { max-size: "2m", max-file: "3" }
@@ -34,14 +38,21 @@ services:
 
     # https://hub.docker.com/r/phpmyadmin/phpmyadmin/
     phpmyadmin:
-        container_name: global_phpmyadmin
+        container_name: "${COMPOSE_PROJECT_NAME}_phpmyadmin"
         image: phpmyadmin/phpmyadmin:4.6
-        env_file: ./.env
         restart: always
         ports:
-            - 8888:80
+            - "8888:80"
         volumes:
             - sessions:/sessions
+            - ./config/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+            - ./config/php.ini:/etc/php7/conf.d/99_custom.ini
+        environment:
+            PMA_ARBITRARY: "${PMA_ARBITRARY}"
+            PMA_HOST: mysql
+            MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+            MYSQL_USER: "${MYSQL_USER}"
+            MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
         logging:
             driver: "json-file"
             options: { max-size: "2m", max-file: "3" }
